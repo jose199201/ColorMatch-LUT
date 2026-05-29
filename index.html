@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>color.grade</title>
+  <title>ColorMatch LUT</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -466,7 +466,7 @@
         <div class="logo-name">color.grade</div>
       </div>
     </div>
-    <div class="topbar-right">calibración de color + LUT .cube</div>
+    <div class="topbar-right">color calibration + LUT .cube</div>
   </div>
 
   <div class="main-grid">
@@ -476,52 +476,52 @@
 
       <!-- INPUTS -->
       <div class="panel">
-        <div class="panel-header">Imágenes</div>
+        <div class="panel-header">Images</div>
 
-        <div class="upload-label">Imagen a editar</div>
+        <div class="upload-label">Source image</div>
         <div class="upload-zone" id="zone-source" onclick="document.getElementById('inp-source').click()">
           <canvas class="thumb" id="thumb-source" style="display:none"></canvas>
-          <div class="uoverlay"><span>↺ cambiar</span></div>
+          <div class="uoverlay"><span>↺ change</span></div>
           <svg class="u-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <span class="u-text">imagen a editar</span>
+          <span class="u-text">image to grade</span>
           <span class="u-sub">jpg · png · webp</span>
           <input type="file" id="inp-source" accept="image/*">
         </div>
 
-        <div class="upload-label" style="margin-top:10px">Referencia de color</div>
+        <div class="upload-label" style="margin-top:10px">Color reference</div>
         <div class="upload-zone" id="zone-ref" onclick="document.getElementById('inp-ref').click()">
           <canvas class="thumb" id="thumb-ref" style="display:none"></canvas>
-          <div class="uoverlay"><span>↺ cambiar</span></div>
+          <div class="uoverlay"><span>↺ change</span></div>
           <svg class="u-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
-          <span class="u-text">paleta de referencia</span>
+          <span class="u-text">color reference</span>
           <span class="u-sub">jpg · png · webp</span>
           <input type="file" id="inp-ref" accept="image/*">
         </div>
 
         <div class="status-pill" id="status-pill" style="margin-top:10px">
           <div class="status-dot" id="status-dot"></div>
-          <span id="status-text">esperando imágenes</span>
+          <span id="status-text">waiting for images</span>
         </div>
       </div>
 
       <!-- CONTROLS -->
       <div class="panel" id="panel-controls" style="display:none">
-        <div class="panel-header">Ajustes</div>
+        <div class="panel-header">Settings</div>
         <div class="ctrl-group">
           <div class="ctrl-item">
-            <div class="ctrl-top"><span class="ctrl-name">intensidad</span><span class="ctrl-val" id="val-strength">80%</span></div>
+            <div class="ctrl-top"><span class="ctrl-name">strength</span><span class="ctrl-val" id="val-strength">80%</span></div>
             <input type="range" id="ctrl-strength" min="0" max="100" value="80" step="1">
           </div>
           <div class="ctrl-item">
-            <div class="ctrl-top"><span class="ctrl-name">brillo</span><span class="ctrl-val" id="val-brightness">0</span></div>
+            <div class="ctrl-top"><span class="ctrl-name">brightness</span><span class="ctrl-val" id="val-brightness">0</span></div>
             <input type="range" id="ctrl-brightness" min="-50" max="50" value="0" step="1">
           </div>
           <div class="ctrl-item">
-            <div class="ctrl-top"><span class="ctrl-name">contraste</span><span class="ctrl-val" id="val-contrast">0</span></div>
+            <div class="ctrl-top"><span class="ctrl-name">contrast</span><span class="ctrl-val" id="val-contrast">0</span></div>
             <input type="range" id="ctrl-contrast" min="-50" max="50" value="0" step="1">
           </div>
           <div class="ctrl-item">
-            <div class="ctrl-top"><span class="ctrl-name">saturación</span><span class="ctrl-val" id="val-sat">0</span></div>
+            <div class="ctrl-top"><span class="ctrl-name">saturation</span><span class="ctrl-val" id="val-sat">0</span></div>
             <input type="range" id="ctrl-sat" min="-100" max="100" value="0" step="1">
           </div>
         </div>
@@ -529,7 +529,7 @@
 
       <!-- STATS -->
       <div class="panel" id="panel-stats" style="display:none">
-        <div class="panel-header">Delta de color</div>
+        <div class="panel-header">Color delta</div>
         <div class="stats-grid">
           <div class="stat-cell"><div class="sc-label">R</div><div class="sc-val r" id="st-r">—</div></div>
           <div class="stat-cell"><div class="sc-label">G</div><div class="sc-val g" id="st-g">—</div></div>
@@ -543,11 +543,11 @@
         <div class="btn-group">
           <button class="btn accent" id="btn-lut" onclick="downloadLUT()" disabled>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            exportar LUT .cube
+            export LUT .cube
           </button>
           <button class="btn" id="btn-img" onclick="downloadImage()" disabled>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            descargar imagen
+            download image
           </button>
         </div>
       </div>
@@ -564,27 +564,27 @@
             <span>original</span>
           </div>
           <div class="img-panel-body" id="body-orig">
-            <div class="empty-state">sin imagen</div>
+            <div class="empty-state">no image</div>
           </div>
         </div>
         <div class="img-panel">
           <div class="img-panel-header">
             <div class="dot dot-out"></div>
-            <span>resultado</span>
+            <span>result</span>
           </div>
           <div class="img-panel-body" id="body-out">
-            <div class="empty-state">esperando calibración</div>
+            <div class="empty-state">waiting for calibration</div>
           </div>
         </div>
       </div>
 
       <div class="hist-row" id="hist-row" style="display:none">
         <div class="hist-panel">
-          <div class="hist-label">histograma — original</div>
+          <div class="hist-label">histogram — original</div>
           <canvas id="hist-orig" height="52"></canvas>
         </div>
         <div class="hist-panel">
-          <div class="hist-label">histograma — resultado</div>
+          <div class="hist-label">histogram — result</div>
           <canvas id="hist-out" height="52"></canvas>
         </div>
       </div>
@@ -807,7 +807,7 @@
     document.getElementById('hist-row').style.display = 'grid';
     document.getElementById('btn-lut').disabled = false;
     document.getElementById('btn-img').disabled = false;
-    setStatus('calibración aplicada', 'active');
+    setStatus('grade applied', 'active');
   }
 
   function handleFile(file, isSource) {
@@ -817,11 +817,11 @@
       setThumb(isSource ? 'thumb-source' : 'thumb-ref', isSource ? 'zone-source' : 'zone-ref', img);
       if (srcImg && refImg) {
         document.getElementById('panel-controls').style.display = 'block';
-        setStatus('calculando...', 'pulse');
+        setStatus('processing...', 'pulse');
         drawOriginalPreview();
         setTimeout(renderOutput, 60);
       } else {
-        setStatus(srcImg ? 'carga la referencia' : 'carga la imagen a editar', '');
+        setStatus(srcImg ? 'load the reference' : 'load the source image', '');
       }
     });
   }
