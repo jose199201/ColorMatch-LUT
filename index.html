@@ -3,495 +3,594 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>color.grade — Calibración de color + LUT</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>color.grade</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f9f8f6;
-      --bg2: #f1f0ec;
-      --bg3: #e8e6e0;
-      --text: #1a1a18;
-      --text2: #5a5a56;
-      --text3: #9a9994;
-      --border: rgba(0,0,0,0.12);
-      --border2: rgba(0,0,0,0.22);
-      --border3: rgba(0,0,0,0.35);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --radius-xl: 16px;
+      --bg0: #0e0f0e;
+      --bg1: #161714;
+      --bg2: #1e1f1c;
+      --bg3: #272824;
+      --bg4: #303128;
+      --line: rgba(255,255,255,0.07);
+      --line2: rgba(255,255,255,0.13);
+      --text: #e8e6df;
+      --text2: #8a8880;
+      --text3: #4e4d49;
+      --accent: #c8f060;
+      --accent2: #96bf30;
+      --r: #e05252;
+      --g: #74b83a;
+      --b: #4f9de0;
+      --radius: 6px;
+      --radius-lg: 10px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1a1a18;
-        --bg2: #242420;
-        --bg3: #2e2e2a;
-        --text: #f0efe9;
-        --text2: #a0a09a;
-        --text3: #606059;
-        --border: rgba(255,255,255,0.1);
-        --border2: rgba(255,255,255,0.18);
-        --border3: rgba(255,255,255,0.28);
-      }
-    }
+    html { background: var(--bg0); }
 
     body {
-      font-family: 'IBM Plex Sans', sans-serif;
-      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg0);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 2rem 1rem 4rem;
+      padding: 0;
     }
 
-    .container {
+    .layout {
       width: 100%;
-      max-width: 820px;
+      max-width: 1100px;
+      padding: 0 1.5rem 4rem;
     }
 
-    /* HEADER */
-    header {
+    /* TOPBAR */
+    .topbar {
       display: flex;
-      align-items: baseline;
-      gap: 14px;
-      padding-bottom: 1.25rem;
-      border-bottom: 0.5px solid var(--border2);
-      margin-bottom: 2rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0 1rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1.5rem;
     }
 
-    header h1 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 22px;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-mark svg { display: block; }
+
+    .logo-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
       font-weight: 500;
-      letter-spacing: -0.03em;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
 
-    header .sub {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
+    .logo-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
       color: var(--text3);
+      letter-spacing: 0.04em;
+    }
+
+    .topbar-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    /* MAIN GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .panel {
+      background: var(--bg1);
+      padding: 1rem;
+    }
+
+    .panel-header {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
     }
 
     /* UPLOAD */
-    .upload-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 1.25rem;
-    }
-
-    .upload-label-top {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 7px;
-    }
-
     .upload-zone {
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-lg);
-      padding: 1rem;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      position: relative;
-      min-height: 160px;
+      border: 1px dashed var(--line2);
+      border-radius: var(--radius);
+      height: 110px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
       overflow: hidden;
       background: var(--bg2);
+      margin-bottom: 8px;
     }
 
+    .upload-zone:last-of-type { margin-bottom: 0; }
+
     .upload-zone:hover {
-      border-color: var(--border3);
-      background: var(--bg);
+      border-color: var(--accent2);
+      background: var(--bg3);
     }
 
     .upload-zone.has-image {
-      border-color: var(--border3);
+      border-style: solid;
+      border-color: var(--line2);
     }
 
     .upload-zone canvas.thumb {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      border-radius: var(--radius-lg);
     }
 
-    .upload-zone .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      border-radius: var(--radius-lg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .upload-zone .uoverlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px;
       opacity: 0;
       transition: opacity 0.15s;
     }
 
-    .upload-zone:hover .overlay { opacity: 1; }
+    .upload-zone:hover .uoverlay { opacity: 1; }
 
-    .upload-zone .overlay span {
+    .uoverlay span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .upload-zone .u-icon { color: var(--text3); }
+    .upload-zone .u-text {
       font-size: 12px;
-      color: #fff;
-      font-family: 'IBM Plex Mono', monospace;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
     }
 
-    .upload-icon {
-      font-size: 32px;
+    .upload-zone .u-sub {
+      font-size: 10px;
       color: var(--text3);
-    }
-
-    .upload-hint {
-      font-size: 13px;
-      color: var(--text3);
-      text-align: center;
+      font-family: 'DM Mono', monospace;
     }
 
     input[type="file"] { display: none; }
 
-    /* STATUS */
-    .status-bar {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
+    .upload-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
       color: var(--text3);
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    /* SEPARATOR */
-    .sep {
-      height: 0.5px;
-      background: var(--border);
-      margin: 1.5rem 0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
     }
 
     /* CONTROLS */
-    .controls {
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 1.5rem;
-    }
-
-    .controls.visible { display: flex; }
-
-    .section-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 10px;
-    }
-
-    .ctrl-row {
+    .ctrl-group {
       display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ctrl-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .ctrl-top {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 14px;
     }
 
-    .ctrl-row label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
+    .ctrl-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
       color: var(--text2);
-      min-width: 100px;
     }
 
-    .ctrl-row input[type="range"] {
-      flex: 1;
+    .ctrl-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    input[type="range"] {
       -webkit-appearance: none;
-      height: 4px;
+      width: 100%;
+      height: 3px;
       border-radius: 2px;
-      background: var(--bg3);
+      background: var(--bg4);
       outline: none;
       cursor: pointer;
     }
 
-    .ctrl-row input[type="range"]::-webkit-slider-thumb {
+    input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px; height: 16px;
+      width: 14px; height: 14px;
       border-radius: 50%;
-      background: var(--text);
-      border: 2px solid var(--bg);
-      box-shadow: 0 0 0 1px var(--border2);
+      background: var(--accent);
       cursor: pointer;
+      border: 2px solid var(--bg1);
     }
 
-    .ctrl-row .val {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: var(--text);
-      min-width: 40px;
-      text-align: right;
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, var(--accent2) var(--pct, 50%), var(--bg4) var(--pct, 50%));
+      height: 3px;
+      border-radius: 2px;
     }
-
-    /* PREVIEW */
-    .preview-section {
-      display: none;
-    }
-
-    .preview-section.visible { display: block; }
-
-    .compare-wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 1.25rem;
-    }
-
-    .compare-col .col-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 7px;
-    }
-
-    .img-frame {
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 0.5px solid var(--border);
-      background: #111;
-    }
-
-    .img-frame canvas {
-      width: 100%;
-      display: block;
-    }
-
-    /* HISTOGRAMS */
-    .histogram-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 1.25rem;
-    }
-
-    .hist-card {
-      background: var(--bg2);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-    }
-
-    .hist-card .hist-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 8px;
-    }
-
-    .hist-card canvas { width: 100%; display: block; }
 
     /* STATS */
-    .stats-row {
+    .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 1.5rem;
+      gap: 6px;
     }
 
-    .stat-card {
+    .stat-cell {
       background: var(--bg2);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
+      border-radius: var(--radius);
+      padding: 7px 8px;
+      text-align: center;
     }
 
-    .stat-card .slabel {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+    .stat-cell .sc-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
       color: var(--text3);
-      margin-bottom: 5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
     }
 
-    .stat-card .sval {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 16px;
+    .stat-cell .sc-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
       font-weight: 500;
     }
 
-    .sval.r { color: #e24b4a; }
-    .sval.g { color: #639922; }
-    .sval.b { color: #378add; }
+    .sc-val.r { color: var(--r); }
+    .sc-val.g { color: var(--g); }
+    .sc-val.b { color: var(--b); }
 
-    /* ACTIONS */
-    .actions {
-      display: none;
-      gap: 10px;
+    /* BUTTONS */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .actions.visible { display: flex; }
-
     .btn {
-      flex: 1;
-      padding: 12px 18px;
-      border-radius: var(--radius-md);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
       cursor: pointer;
-      border: 0.5px solid var(--border2);
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.15s, border-color 0.15s;
+      border: 1px solid var(--line2);
+      background: var(--bg2);
+      color: var(--text2);
+      transition: all 0.15s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      letter-spacing: 0.02em;
     }
 
-    .btn:hover {
-      background: var(--bg2);
-      border-color: var(--border3);
+    .btn:hover { background: var(--bg3); color: var(--text); border-color: var(--line2); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn.accent {
+      background: var(--accent);
+      color: #0e0f0e;
+      border-color: var(--accent);
+      font-weight: 500;
     }
 
-    .btn.primary {
-      background: var(--text);
-      color: var(--bg);
-      border-color: var(--text);
-    }
+    .btn.accent:hover { background: var(--accent2); border-color: var(--accent2); }
+    .btn.accent:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    .btn.primary:hover { opacity: 0.82; }
-
-    /* FOOTER */
-    footer {
-      margin-top: 3rem;
-      padding-top: 1.25rem;
-      border-top: 0.5px solid var(--border);
-      font-family: 'IBM Plex Mono', monospace;
+    /* STATUS */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
       font-size: 11px;
       color: var(--text3);
-      text-align: center;
+      padding: 4px 0;
     }
 
-    @media (max-width: 560px) {
-      .upload-grid, .compare-wrap, .histogram-row, .stats-row { grid-template-columns: 1fr; }
-      .actions { flex-direction: column; }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .status-dot.active { background: var(--accent); }
+    .status-dot.pulse {
+      background: var(--accent);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* PREVIEW AREA */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .img-panel {
+      background: var(--bg1);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .img-panel-header {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .img-panel-header .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-orig { background: var(--text3); }
+    .dot-out  { background: var(--accent); }
+
+    .img-panel-header span {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .img-panel-body {
+      background: #080808;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-panel-body canvas { width: 100%; display: block; }
+
+    .empty-state {
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    /* HISTOGRAMS */
+    .hist-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .hist-panel {
+      background: var(--bg1);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+    }
+
+    .hist-panel .hist-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .hist-panel canvas { width: 100%; display: block; }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .compare-grid, .hist-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-<div class="container">
+<div class="layout">
 
-  <header>
-    <h1>color.grade</h1>
-    <span class="sub">/ calibración de color + exportación LUT .cube</span>
-  </header>
-
-  <!-- UPLOAD -->
-  <div class="upload-grid">
-    <div>
-      <div class="upload-label-top">Imagen a editar</div>
-      <div class="upload-zone" id="zone-source" onclick="document.getElementById('inp-source').click()">
-        <canvas class="thumb" id="thumb-source" style="display:none"></canvas>
-        <div class="overlay"><span>↺ cambiar imagen</span></div>
-        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span class="upload-hint">Clic o arrastra la imagen</span>
-        <input type="file" id="inp-source" accept="image/*">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="5" cy="8" r="3" fill="#0e0f0e"/>
+          <circle cx="11" cy="8" r="3" fill="#0e0f0e" opacity="0.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">color.grade</div>
       </div>
     </div>
-    <div>
-      <div class="upload-label-top">Referencia de color</div>
-      <div class="upload-zone" id="zone-ref" onclick="document.getElementById('inp-ref').click()">
-        <canvas class="thumb" id="thumb-ref" style="display:none"></canvas>
-        <div class="overlay"><span>↺ cambiar imagen</span></div>
-        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="13.5" cy="17.5" r="2.5"/><path d="M17.5 6.5h-1M20 6.5h-1M17.5 17.5h-1M20 17.5h-1M10 12h-1M7 12h1"/></svg>
-        <span class="upload-hint">Clic o arrastra la imagen</span>
-        <input type="file" id="inp-ref" accept="image/*">
-      </div>
-    </div>
+    <div class="topbar-right">calibración de color + LUT .cube</div>
   </div>
 
-  <div class="status-bar" id="status">Carga ambas imágenes para comenzar</div>
+  <div class="main-grid">
 
-  <!-- CONTROLS -->
-  <div class="controls" id="controls">
-    <div class="sep" style="margin-top:0"></div>
-    <div class="section-label">Ajustes de calibración</div>
-    <div class="ctrl-row">
-      <label>Intensidad</label>
-      <input type="range" id="ctrl-strength" min="0" max="100" value="80" step="1">
-      <span class="val" id="val-strength">80%</span>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- INPUTS -->
+      <div class="panel">
+        <div class="panel-header">Imágenes</div>
+
+        <div class="upload-label">Imagen a editar</div>
+        <div class="upload-zone" id="zone-source" onclick="document.getElementById('inp-source').click()">
+          <canvas class="thumb" id="thumb-source" style="display:none"></canvas>
+          <div class="uoverlay"><span>↺ cambiar</span></div>
+          <svg class="u-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span class="u-text">imagen a editar</span>
+          <span class="u-sub">jpg · png · webp</span>
+          <input type="file" id="inp-source" accept="image/*">
+        </div>
+
+        <div class="upload-label" style="margin-top:10px">Referencia de color</div>
+        <div class="upload-zone" id="zone-ref" onclick="document.getElementById('inp-ref').click()">
+          <canvas class="thumb" id="thumb-ref" style="display:none"></canvas>
+          <div class="uoverlay"><span>↺ cambiar</span></div>
+          <svg class="u-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+          <span class="u-text">paleta de referencia</span>
+          <span class="u-sub">jpg · png · webp</span>
+          <input type="file" id="inp-ref" accept="image/*">
+        </div>
+
+        <div class="status-pill" id="status-pill" style="margin-top:10px">
+          <div class="status-dot" id="status-dot"></div>
+          <span id="status-text">esperando imágenes</span>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="panel" id="panel-controls" style="display:none">
+        <div class="panel-header">Ajustes</div>
+        <div class="ctrl-group">
+          <div class="ctrl-item">
+            <div class="ctrl-top"><span class="ctrl-name">intensidad</span><span class="ctrl-val" id="val-strength">80%</span></div>
+            <input type="range" id="ctrl-strength" min="0" max="100" value="80" step="1">
+          </div>
+          <div class="ctrl-item">
+            <div class="ctrl-top"><span class="ctrl-name">brillo</span><span class="ctrl-val" id="val-brightness">0</span></div>
+            <input type="range" id="ctrl-brightness" min="-50" max="50" value="0" step="1">
+          </div>
+          <div class="ctrl-item">
+            <div class="ctrl-top"><span class="ctrl-name">contraste</span><span class="ctrl-val" id="val-contrast">0</span></div>
+            <input type="range" id="ctrl-contrast" min="-50" max="50" value="0" step="1">
+          </div>
+          <div class="ctrl-item">
+            <div class="ctrl-top"><span class="ctrl-name">saturación</span><span class="ctrl-val" id="val-sat">0</span></div>
+            <input type="range" id="ctrl-sat" min="-100" max="100" value="0" step="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="panel" id="panel-stats" style="display:none">
+        <div class="panel-header">Delta de color</div>
+        <div class="stats-grid">
+          <div class="stat-cell"><div class="sc-label">R</div><div class="sc-val r" id="st-r">—</div></div>
+          <div class="stat-cell"><div class="sc-label">G</div><div class="sc-val g" id="st-g">—</div></div>
+          <div class="stat-cell"><div class="sc-label">B</div><div class="sc-val b" id="st-b">—</div></div>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="panel">
+        <div class="panel-header">Exportar</div>
+        <div class="btn-group">
+          <button class="btn accent" id="btn-lut" onclick="downloadLUT()" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            exportar LUT .cube
+          </button>
+          <button class="btn" id="btn-img" onclick="downloadImage()" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            descargar imagen
+          </button>
+        </div>
+      </div>
+
     </div>
-    <div class="ctrl-row">
-      <label>Brillo</label>
-      <input type="range" id="ctrl-brightness" min="-50" max="50" value="0" step="1">
-      <span class="val" id="val-brightness">0</span>
-    </div>
-    <div class="ctrl-row">
-      <label>Contraste</label>
-      <input type="range" id="ctrl-contrast" min="-50" max="50" value="0" step="1">
-      <span class="val" id="val-contrast">0</span>
-    </div>
-    <div class="ctrl-row">
-      <label>Saturación</label>
-      <input type="range" id="ctrl-sat" min="-100" max="100" value="0" step="1">
-      <span class="val" id="val-sat">0</span>
+
+    <!-- PREVIEW -->
+    <div class="preview-area">
+
+      <div class="compare-grid">
+        <div class="img-panel">
+          <div class="img-panel-header">
+            <div class="dot dot-orig"></div>
+            <span>original</span>
+          </div>
+          <div class="img-panel-body" id="body-orig">
+            <div class="empty-state">sin imagen</div>
+          </div>
+        </div>
+        <div class="img-panel">
+          <div class="img-panel-header">
+            <div class="dot dot-out"></div>
+            <span>resultado</span>
+          </div>
+          <div class="img-panel-body" id="body-out">
+            <div class="empty-state">esperando calibración</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hist-row" id="hist-row" style="display:none">
+        <div class="hist-panel">
+          <div class="hist-label">histograma — original</div>
+          <canvas id="hist-orig" height="52"></canvas>
+        </div>
+        <div class="hist-panel">
+          <div class="hist-label">histograma — resultado</div>
+          <canvas id="hist-out" height="52"></canvas>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <!-- PREVIEW -->
-  <div class="preview-section" id="preview-section">
-    <div class="sep"></div>
-    <div class="compare-wrap">
-      <div class="compare-col">
-        <div class="col-label">Original</div>
-        <div class="img-frame"><canvas id="canvas-original"></canvas></div>
-      </div>
-      <div class="compare-col">
-        <div class="col-label">Resultado calibrado</div>
-        <div class="img-frame"><canvas id="canvas-output"></canvas></div>
-      </div>
-    </div>
-
-    <div class="histogram-row">
-      <div class="hist-card">
-        <div class="hist-label">Histograma — original</div>
-        <canvas id="hist-orig" height="56"></canvas>
-      </div>
-      <div class="hist-card">
-        <div class="hist-label">Histograma — resultado</div>
-        <canvas id="hist-out" height="56"></canvas>
-      </div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card"><div class="slabel">Delta R</div><div class="sval r" id="st-r">—</div></div>
-      <div class="stat-card"><div class="slabel">Delta G</div><div class="sval g" id="st-g">—</div></div>
-      <div class="stat-card"><div class="slabel">Delta B</div><div class="sval b" id="st-b">—</div></div>
-    </div>
-
-    <div class="actions visible" id="actions">
-      <button class="btn" onclick="downloadImage()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Descargar imagen
-      </button>
-      <button class="btn primary" onclick="downloadLUT()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-        Exportar LUT .cube
-      </button>
-    </div>
-  </div>
-
-  <footer>
-    color.grade — 100% local, ninguna imagen sale de tu navegador &nbsp;·&nbsp; compatible con Photoshop · Lightroom · DaVinci Resolve
-  </footer>
-
 </div>
 
 <script>
@@ -500,10 +599,10 @@
   let srcStats = null, refStats = null;
   let currentLUT = null;
 
-  function loadImage(file, callback) {
+  function loadImage(file, cb) {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => { callback(img); URL.revokeObjectURL(url); };
+    img.onload = () => { cb(img); URL.revokeObjectURL(url); };
     img.src = url;
   }
 
@@ -518,26 +617,38 @@
   }
 
   function computeStats(imageData) {
-    const d = imageData.data;
-    const n = d.length / 4;
-    let sumR=0,sumG=0,sumB=0,sumR2=0,sumG2=0,sumB2=0;
+    const d = imageData.data, n = d.length / 4;
+    let sR=0,sG=0,sB=0,sR2=0,sG2=0,sB2=0;
     for (let i=0;i<d.length;i+=4) {
-      const r=d[i]/255, g=d[i+1]/255, b=d[i+2]/255;
-      sumR+=r; sumG+=g; sumB+=b;
-      sumR2+=r*r; sumG2+=g*g; sumB2+=b*b;
+      const r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255;
+      sR+=r;sG+=g;sB+=b;sR2+=r*r;sG2+=g*g;sB2+=b*b;
     }
     return {
-      meanR:sumR/n, meanG:sumG/n, meanB:sumB/n,
-      stdR:Math.sqrt(sumR2/n-(sumR/n)**2),
-      stdG:Math.sqrt(sumG2/n-(sumG/n)**2),
-      stdB:Math.sqrt(sumB2/n-(sumB/n)**2)
+      meanR:sR/n, meanG:sG/n, meanB:sB/n,
+      stdR:Math.sqrt(Math.max(0,sR2/n-(sR/n)**2)),
+      stdG:Math.sqrt(Math.max(0,sG2/n-(sG/n)**2)),
+      stdB:Math.sqrt(Math.max(0,sB2/n-(sB/n)**2))
     };
   }
 
+  // Softer transfer: S-curve blend to avoid burning highlights
   function transfer(val, srcMean, srcStd, refMean, refStd, strength) {
-    if (srcStd < 0.001) return val;
-    const t = refMean + (val - srcMean) * (refStd / srcStd);
-    return val + (t - val) * strength;
+    if (srcStd < 0.001) return val + (refMean - srcMean) * strength;
+    const ratio = Math.min(refStd / srcStd, 2.0); // cap ratio to avoid blowout
+    const transferred = refMean + (val - srcMean) * ratio;
+    // soft clamp via smoothstep to preserve detail in extremes
+    const blended = val + (transferred - val) * strength;
+    return blended;
+  }
+
+  // Soft clamp: tanh-based to preserve highlight/shadow detail
+  function softClamp(v) {
+    if (v <= 0) return 0;
+    if (v >= 1) return 1;
+    // gentle s-curve rolloff near 0 and 1
+    if (v > 0.85) return 0.85 + (1 - 0.85) * Math.tanh((v - 0.85) / 0.1) * 0.1 / Math.tanh(1.5);
+    if (v < 0.15) return 0.15 - 0.15 * Math.tanh((0.15 - v) / 0.1) * 0.1 / Math.tanh(1.5);
+    return v;
   }
 
   function buildLUT(srcStats, refStats, strength, brightness, contrast, sat) {
@@ -548,23 +659,31 @@
       for (let gi=0;gi<size;gi++) {
         for (let ri=0;ri<size;ri++) {
           let r=ri*step, g=gi*step, b=bi*step;
-          r=transfer(r,srcStats.meanR,srcStats.stdR,refStats.meanR,refStats.stdR,strength);
-          g=transfer(g,srcStats.meanG,srcStats.stdG,refStats.meanG,refStats.stdG,strength);
-          b=transfer(b,srcStats.meanB,srcStats.stdB,refStats.meanB,refStats.stdB,strength);
-          const bAdj=brightness/255;
-          r+=bAdj; g+=bAdj; b+=bAdj;
-          if (contrast!==0) {
-            const cf=1+contrast/100;
+
+          r = transfer(r, srcStats.meanR, srcStats.stdR, refStats.meanR, refStats.stdR, strength);
+          g = transfer(g, srcStats.meanG, srcStats.stdG, refStats.meanG, refStats.stdG, strength);
+          b = transfer(b, srcStats.meanB, srcStats.stdB, refStats.meanB, refStats.stdB, strength);
+
+          if (brightness !== 0) {
+            const bAdj = brightness / 255;
+            r+=bAdj; g+=bAdj; b+=bAdj;
+          }
+
+          if (contrast !== 0) {
+            const cf = 1 + contrast / 150; // gentler contrast
             r=(r-0.5)*cf+0.5; g=(g-0.5)*cf+0.5; b=(b-0.5)*cf+0.5;
           }
-          if (sat!==0) {
-            const lum=0.2126*r+0.7152*g+0.0722*b, sf=1+sat/100;
+
+          if (sat !== 0) {
+            const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+            const sf = 1 + sat / 150; // gentler saturation
             r=lum+(r-lum)*sf; g=lum+(g-lum)*sf; b=lum+(b-lum)*sf;
           }
+
           const idx=(ri+gi*size+bi*size*size)*3;
-          lut[idx]=Math.max(0,Math.min(1,r));
-          lut[idx+1]=Math.max(0,Math.min(1,g));
-          lut[idx+2]=Math.max(0,Math.min(1,b));
+          lut[idx]   = softClamp(r);
+          lut[idx+1] = softClamp(g);
+          lut[idx+2] = softClamp(b);
         }
       }
     }
@@ -575,12 +694,12 @@
     const d=imageData.data, size=LUT_SIZE;
     const out=new Uint8ClampedArray(d);
     for (let i=0;i<d.length;i+=4) {
-      const r=d[i]/255, g=d[i+1]/255, b=d[i+2]/255;
-      const ri=r*(size-1), gi=g*(size-1), bi=b*(size-1);
-      const r0=Math.floor(ri), r1=Math.min(r0+1,size-1);
-      const g0=Math.floor(gi), g1=Math.min(g0+1,size-1);
-      const b0=Math.floor(bi), b1=Math.min(b0+1,size-1);
-      const rf=ri-r0, gf=gi-g0, bf=bi-b0;
+      const r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255;
+      const ri=r*(size-1),gi=g*(size-1),bi=b*(size-1);
+      const r0=Math.floor(ri),r1=Math.min(r0+1,size-1);
+      const g0=Math.floor(gi),g1=Math.min(g0+1,size-1);
+      const b0=Math.floor(bi),b1=Math.min(b0+1,size-1);
+      const rf=ri-r0,gf=gi-g0,bf=bi-b0;
       function s(ri,gi,bi){const idx=(ri+gi*size+bi*size*size)*3;return[lut[idx],lut[idx+1],lut[idx+2]];}
       const c000=s(r0,g0,b0),c100=s(r1,g0,b0),c010=s(r0,g1,b0),c110=s(r1,g1,b0);
       const c001=s(r0,g0,b1),c101=s(r1,g0,b1),c011=s(r0,g1,b1),c111=s(r1,g1,b1);
@@ -603,163 +722,177 @@
       gH[Math.min(bins-1,Math.floor(d[i+1]/256*bins))]++;
       bH[Math.min(bins-1,Math.floor(d[i+2]/256*bins))]++;
     }
-    const maxV=Math.max(...rH,...gH,...bH);
-    const w=canvasEl.parentElement.clientWidth-24||200, h=56;
+    const maxV=Math.max(...rH,...gH,...bH)||1;
+    const w=canvasEl.parentElement.clientWidth-24||200,h=52;
     canvasEl.width=w; canvasEl.height=h;
     const ctx=canvasEl.getContext('2d');
-    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#0e0f0e';
+    ctx.fillRect(0,0,w,h);
     const bw=w/bins;
-    [[rH,'rgba(226,75,74,0.65)'],[gH,'rgba(99,153,34,0.65)'],[bH,'rgba(55,138,221,0.65)']].forEach(([hist,col])=>{
+    [[rH,'rgba(224,82,82,0.7)'],[gH,'rgba(116,184,58,0.7)'],[bH,'rgba(79,157,224,0.7)']].forEach(([hist,col])=>{
       ctx.fillStyle=col;
       hist.forEach((v,i)=>{const bh=v/maxV*h;ctx.fillRect(i*bw,h-bh,bw-0.5,bh);});
     });
   }
 
-  function setThumbnail(thumbId, zoneId, img) {
+  function setThumb(thumbId, zoneId, img) {
     const zone=document.getElementById(zoneId);
     const thumb=document.getElementById(thumbId);
     thumb.style.display='block';
-    const zw=zone.offsetWidth||220, zh=zone.offsetHeight||160;
+    const zw=zone.offsetWidth||280,zh=zone.offsetHeight||110;
     thumb.width=zw; thumb.height=zh;
     const ctx=thumb.getContext('2d');
     const scale=Math.max(zw/img.width,zh/img.height);
-    const dw=img.width*scale, dh=img.height*scale;
+    const dw=img.width*scale,dh=img.height*scale;
     ctx.drawImage(img,(zw-dw)/2,(zh-dh)/2,dw,dh);
     zone.classList.add('has-image');
-    const icon=zone.querySelector('svg'), hint=zone.querySelector('.upload-hint');
-    if(icon) icon.style.display='none';
-    if(hint) hint.style.display='none';
+    zone.querySelector('svg')?.remove();
+    zone.querySelector('.u-text')?.remove();
+    zone.querySelector('.u-sub')?.remove();
   }
 
-  function drawOriginal() {
-    if (!srcImg) return;
-    const c=document.getElementById('canvas-original');
-    const maxW=400, aspect=srcImg.height/srcImg.width;
-    const w=Math.min(srcImg.width,maxW), h=Math.round(w*aspect);
-    c.width=w; c.height=h;
-    c.getContext('2d').drawImage(srcImg,0,0,w,h);
+  function setStatus(text, state) {
+    document.getElementById('status-text').textContent = text;
+    const dot = document.getElementById('status-dot');
+    dot.className = 'status-dot' + (state === 'active' ? ' active' : state === 'pulse' ? ' pulse' : '');
+  }
+
+  function drawOriginalPreview() {
+    const body = document.getElementById('body-orig');
+    body.innerHTML = '';
+    const c = document.createElement('canvas');
+    const maxW = body.offsetWidth || 400;
+    const aspect = srcImg.height / srcImg.width;
+    c.width = Math.min(srcImg.width, maxW * 2);
+    c.height = Math.round(c.width * aspect);
+    c.getContext('2d').drawImage(srcImg, 0, 0, c.width, c.height);
+    body.appendChild(c);
   }
 
   function renderOutput() {
-    if (!srcImg||!srcStats||!refStats) return;
-    const strength=parseInt(document.getElementById('ctrl-strength').value)/100;
-    const brightness=parseInt(document.getElementById('ctrl-brightness').value);
-    const contrast=parseInt(document.getElementById('ctrl-contrast').value);
-    const sat=parseInt(document.getElementById('ctrl-sat').value);
+    if (!srcImg || !srcStats || !refStats) return;
+    const strength = parseInt(document.getElementById('ctrl-strength').value) / 100;
+    const brightness = parseInt(document.getElementById('ctrl-brightness').value);
+    const contrast = parseInt(document.getElementById('ctrl-contrast').value);
+    const sat = parseInt(document.getElementById('ctrl-sat').value);
 
-    currentLUT=buildLUT(srcStats,refStats,strength,brightness,contrast,sat);
+    currentLUT = buildLUT(srcStats, refStats, strength, brightness, contrast, sat);
 
-    const outCanvas=document.getElementById('canvas-output');
-    const aspect=srcImg.height/srcImg.width;
-    const maxW=400, w=Math.min(srcImg.width,maxW), h=Math.round(w*aspect);
-    outCanvas.width=w; outCanvas.height=h;
-    const ctx=outCanvas.getContext('2d');
-    ctx.drawImage(srcImg,0,0,w,h);
-    const id=ctx.getImageData(0,0,w,h);
-    ctx.putImageData(new ImageData(applyLUT(id,currentLUT),w,h),0,0);
+    const body = document.getElementById('body-out');
+    body.innerHTML = '';
+    const outCanvas = document.createElement('canvas');
+    const maxW = body.offsetWidth || 400;
+    const aspect = srcImg.height / srcImg.width;
+    outCanvas.width = Math.min(srcImg.width, maxW * 2);
+    outCanvas.height = Math.round(outCanvas.width * aspect);
+    const ctx = outCanvas.getContext('2d');
+    ctx.drawImage(srcImg, 0, 0, outCanvas.width, outCanvas.height);
+    const id = ctx.getImageData(0, 0, outCanvas.width, outCanvas.height);
+    ctx.putImageData(new ImageData(applyLUT(id, currentLUT), outCanvas.width, outCanvas.height), 0, 0);
+    body.appendChild(outCanvas);
 
-    const origSmall=getImageData(srcImg,128);
-    drawHistogram(document.getElementById('hist-orig'),origSmall);
-    const outSmall=new ImageData(applyLUT(origSmall,currentLUT),origSmall.width,origSmall.height);
-    drawHistogram(document.getElementById('hist-out'),outSmall);
+    const origSmall = getImageData(srcImg, 128);
+    drawHistogram(document.getElementById('hist-orig'), origSmall);
+    const outSmall = new ImageData(applyLUT(origSmall, currentLUT), origSmall.width, origSmall.height);
+    drawHistogram(document.getElementById('hist-out'), outSmall);
 
-    const dR=Math.round((refStats.meanR-srcStats.meanR)*100);
-    const dG=Math.round((refStats.meanG-srcStats.meanG)*100);
-    const dB=Math.round((refStats.meanB-srcStats.meanB)*100);
-    document.getElementById('st-r').textContent=(dR>=0?'+':'')+dR;
-    document.getElementById('st-g').textContent=(dG>=0?'+':'')+dG;
-    document.getElementById('st-b').textContent=(dB>=0?'+':'')+dB;
+    const dR = Math.round((refStats.meanR - srcStats.meanR) * 100);
+    const dG = Math.round((refStats.meanG - srcStats.meanG) * 100);
+    const dB = Math.round((refStats.meanB - srcStats.meanB) * 100);
+    document.getElementById('st-r').textContent = (dR >= 0 ? '+' : '') + dR;
+    document.getElementById('st-g').textContent = (dG >= 0 ? '+' : '') + dG;
+    document.getElementById('st-b').textContent = (dB >= 0 ? '+' : '') + dB;
 
-    document.getElementById('preview-section').classList.add('visible');
-    document.getElementById('status').textContent='Calibración aplicada — ajusta los controles para refinar';
+    document.getElementById('panel-stats').style.display = 'block';
+    document.getElementById('hist-row').style.display = 'grid';
+    document.getElementById('btn-lut').disabled = false;
+    document.getElementById('btn-img').disabled = false;
+    setStatus('calibración aplicada', 'active');
   }
 
-  function setupInput(inputId, thumbId, zoneId, isSource) {
-    document.getElementById(inputId).addEventListener('change', function(e) {
-      const file=e.target.files[0]; if(!file) return;
-      loadImage(file, img=>{
-        if(isSource){srcImg=img; srcStats=computeStats(getImageData(img));}
-        else{refImg=img; refStats=computeStats(getImageData(img));}
-        setThumbnail(thumbId,zoneId,img);
-        checkAndRender();
-      });
+  function handleFile(file, isSource) {
+    loadImage(file, img => {
+      if (isSource) { srcImg = img; srcStats = computeStats(getImageData(img)); }
+      else { refImg = img; refStats = computeStats(getImageData(img)); }
+      setThumb(isSource ? 'thumb-source' : 'thumb-ref', isSource ? 'zone-source' : 'zone-ref', img);
+      if (srcImg && refImg) {
+        document.getElementById('panel-controls').style.display = 'block';
+        setStatus('calculando...', 'pulse');
+        drawOriginalPreview();
+        setTimeout(renderOutput, 60);
+      } else {
+        setStatus(srcImg ? 'carga la referencia' : 'carga la imagen a editar', '');
+      }
     });
   }
 
-  function checkAndRender() {
-    if(srcImg&&refImg){
-      document.getElementById('controls').classList.add('visible');
-      document.getElementById('status').textContent='Calculando calibración...';
-      drawOriginal();
-      setTimeout(renderOutput,50);
-    } else {
-      document.getElementById('status').textContent=
-        srcImg?'Carga la imagen de referencia':refImg?'Carga la imagen a editar':'Carga ambas imágenes para comenzar';
-    }
-  }
+  document.getElementById('inp-source').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0], true); });
+  document.getElementById('inp-ref').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0], false); });
 
-  setupInput('inp-source','thumb-source','zone-source',true);
-  setupInput('inp-ref','thumb-ref','zone-ref',false);
+  const ctrlMap = {
+    'ctrl-strength': { out: 'val-strength', fmt: v => v+'%', pct: v => v },
+    'ctrl-brightness': { out: 'val-brightness', fmt: v => v, pct: v => (parseInt(v)+50)/100*100 },
+    'ctrl-contrast': { out: 'val-contrast', fmt: v => v, pct: v => (parseInt(v)+50)/100*100 },
+    'ctrl-sat': { out: 'val-sat', fmt: v => v, pct: v => (parseInt(v)+100)/200*100 }
+  };
 
-  ['ctrl-strength','ctrl-brightness','ctrl-contrast','ctrl-sat'].forEach(id=>{
-    document.getElementById(id).addEventListener('input',function(){
-      const map={'ctrl-strength':v=>v+'%','ctrl-brightness':v=>v,'ctrl-contrast':v=>v,'ctrl-sat':v=>v};
-      document.getElementById(id.replace('ctrl-','val-')).textContent=map[id](this.value);
+  Object.entries(ctrlMap).forEach(([id, cfg]) => {
+    const el = document.getElementById(id);
+    el.style.setProperty('--pct', cfg.pct(el.value)+'%');
+    el.addEventListener('input', function() {
+      document.getElementById(cfg.out).textContent = cfg.fmt(this.value);
+      this.style.setProperty('--pct', cfg.pct(this.value)+'%');
       renderOutput();
     });
   });
 
-  ['zone-source','zone-ref'].forEach(id=>{
-    const zone=document.getElementById(id);
-    zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='var(--border3)';});
-    zone.addEventListener('dragleave',()=>{zone.style.borderColor='';});
-    zone.addEventListener('drop',e=>{
+  ['zone-source','zone-ref'].forEach(id => {
+    const zone = document.getElementById(id);
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='var(--accent2)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor=''; });
+    zone.addEventListener('drop', e => {
       e.preventDefault(); zone.style.borderColor='';
-      const file=e.dataTransfer.files[0];
-      if(file&&file.type.startsWith('image/')){
-        const isSource=id==='zone-source';
-        const inp=document.getElementById(isSource?'inp-source':'inp-ref');
-        const dt=new DataTransfer(); dt.items.add(file); inp.files=dt.files;
-        inp.dispatchEvent(new Event('change'));
-      }
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleFile(file, id === 'zone-source');
     });
   });
 
   function downloadImage() {
-    const canvas=document.getElementById('canvas-output');
-    canvas.toBlob(blob=>{
-      const a=document.createElement('a');
-      a.download='calibrated_image.png';
-      a.href=URL.createObjectURL(blob);
+    const canvas = document.getElementById('body-out').querySelector('canvas');
+    if (!canvas) return;
+    canvas.toBlob(blob => {
+      const a = document.createElement('a');
+      a.download = 'calibrated.png';
+      a.href = URL.createObjectURL(blob);
       a.click();
-      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-    },'image/png');
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
   }
 
   function downloadLUT() {
-    if(!currentLUT) return;
-    const size=LUT_SIZE;
-    const lines=[
-      'TITLE "color.grade LUT"',
-      '# Generated by color.grade — https://github.com/tu-usuario/color-grade',
-      '# Compatible with Photoshop, Lightroom, DaVinci Resolve, Premiere Pro',
-      'LUT_3D_SIZE '+size,
+    if (!currentLUT) return;
+    const size = LUT_SIZE;
+    const lines = [
+      'TITLE "color.grade"',
+      '# https://jose199201.github.io/ColorMatch-LUT/',
+      '# Compatible: Photoshop · Lightroom · DaVinci Resolve · Premiere Pro',
+      'LUT_3D_SIZE ' + size,
       'DOMAIN_MIN 0.0 0.0 0.0',
       'DOMAIN_MAX 1.0 1.0 1.0',
       ''
     ];
-    for(let bi=0;bi<size;bi++)
-      for(let gi=0;gi<size;gi++)
-        for(let ri=0;ri<size;ri++){
+    for (let bi=0;bi<size;bi++)
+      for (let gi=0;gi<size;gi++)
+        for (let ri=0;ri<size;ri++) {
           const idx=(ri+gi*size+bi*size*size)*3;
           lines.push(currentLUT[idx].toFixed(6)+' '+currentLUT[idx+1].toFixed(6)+' '+currentLUT[idx+2].toFixed(6));
         }
-    const blob=new Blob([lines.join('\n')],{type:'text/plain'});
-    const a=document.createElement('a');
-    a.download='color_grade.cube';
-    a.href=URL.createObjectURL(blob);
+    const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.download = 'color_grade.cube';
+    a.href = URL.createObjectURL(blob);
     a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 </script>
 </body>
