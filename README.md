@@ -1,35 +1,34 @@
-[README.md](https://github.com/user-attachments/files/28411656/README.md)
-# color.grade
+# ColorMatch LUT
 
-**→ [Abrir la app](https://jose199201.github.io/ColorMatch-LUT/)**
+**→ [Open the app](https://jose199201.github.io/ColorMatch-LUT/)**
 
-Herramienta de calibración de color en el navegador. Sube una imagen que quieres editar y otra de referencia, y la app transfiere la paleta de color automáticamente. Sin instalación, sin servidor — todo corre localmente en tu navegador.
+Browser-based color grading tool. Upload a source image and a color reference, and the app automatically transfers the color palette. No install, no server — everything runs locally in your browser.
 
 ---
 
-## Qué hace
+## What it does
 
-- Analiza la distribución de color (media + desviación estándar por canal RGB) de ambas imágenes
-- Transfiere la paleta de la referencia a la imagen a editar usando el método Reinhard con soft-clamp para preservar las altas luces
-- Permite ajustar intensidad, brillo, contraste y saturación en tiempo real
-- Exporta un **LUT 3D de 33×33×33 en formato `.cube`** compatible con Photoshop, Lightroom, DaVinci Resolve y Premiere Pro
-- Muestra histogramas comparativos y delta de color por canal
+- Analyzes the color distribution (mean + standard deviation per RGB channel) of both images
+- Transfers the reference palette to the source image using the Reinhard method with soft-clamp to preserve highlights
+- Lets you fine-tune strength, brightness, contrast, and saturation in real time
+- Exports a **33×33×33 3D LUT in `.cube` format** compatible with Photoshop, Lightroom, DaVinci Resolve, and Premiere Pro
+- Shows comparative histograms and per-channel color delta
 
-## Cómo usar el LUT en Photoshop
+## How to use the LUT in Photoshop
 
-1. Exporta el `.cube` desde la app
-2. `Capa → Nueva capa de ajuste → Búsqueda de color`
-3. En el panel de propiedades: `Cargar LUT 3D...` → selecciona el `.cube`
+1. Export the `.cube` from the app
+2. `Layer → New Adjustment Layer → Color Lookup`
+3. In the properties panel: `Load 3D LUT...` → select your `.cube` file
 
-## Formatos soportados
+## Supported formats
 
-Entrada: JPG · PNG · WebP  
-Exportación LUT: `.cube` (3D LUT estándar)  
-Exportación imagen: PNG
+Input: JPG · PNG · WebP  
+LUT export: `.cube` (standard 3D LUT)  
+Image export: PNG
 
-## Privacidad
+## Privacy
 
-Ninguna imagen sale de tu navegador. No hay backend, no hay servidor, no hay tracking.
+No image ever leaves your browser. No backend, no server, no tracking.
 
 ---
 
