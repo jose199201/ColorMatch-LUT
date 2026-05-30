@@ -444,6 +444,139 @@
 
     .hist-panel canvas { width: 100%; display: block; }
 
+    /* SELECTIVE COLOR */
+    .selcol-section {
+      background: var(--bg1);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .selcol-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .selcol-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+    .selcol-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      background: var(--bg3);
+      padding: 2px 7px;
+      border-radius: 20px;
+      border: 1px solid var(--line2);
+    }
+    .selcol-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .selcol-tabs::-webkit-scrollbar { display: none; }
+    .selcol-tab {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 7px 11px;
+      cursor: pointer;
+      color: var(--text3);
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .selcol-tab:hover { color: var(--text2); }
+    .selcol-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .tab-swatch {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .selcol-body { padding: 14px; }
+    .sc-slider-group { display: flex; flex-direction: column; gap: 10px; }
+    .sc-slider-row { display: flex; align-items: center; gap: 10px; }
+    .sc-ch-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      width: 14px;
+      flex-shrink: 0;
+      color: var(--text3);
+    }
+    .sc-track-wrap {
+      flex: 1;
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .sc-track {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      position: relative;
+    }
+    .sc-track-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 2px;
+      background: var(--bg4);
+    }
+    .sc-track-fill {
+      position: absolute;
+      top: 0; bottom: 0;
+      border-radius: 2px;
+      transition: left 0.15s, width 0.15s;
+    }
+    .sc-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--text);
+      border: 2px solid var(--bg1);
+      box-shadow: 0 0 0 1px var(--line2);
+      transition: left 0.15s;
+      pointer-events: none;
+    }
+    .sc-center-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: var(--line2);
+    }
+    .sc-val-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      min-width: 34px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .sc-val-label.pos { color: var(--accent); }
+    .sc-val-label.neg { color: #e05252; }
+    .sc-val-label.zero { color: var(--text3); }
+    .sc-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      line-height: 1.6;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 700px) {
       .main-grid { grid-template-columns: 1fr; }
@@ -539,7 +672,7 @@
 
       <!-- EXPORT -->
       <div class="panel">
-        <div class="panel-header">Exportar</div>
+        <div class="panel-header">Export</div>
         <div class="btn-group">
           <button class="btn accent" id="btn-lut" onclick="downloadLUT()" disabled>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
@@ -586,6 +719,50 @@
         <div class="hist-panel">
           <div class="hist-label">histogram — result</div>
           <canvas id="hist-out" height="52"></canvas>
+        </div>
+      </div>
+
+      <!-- SELECTIVE COLOR -->
+      <div class="selcol-section" id="selcol-section" style="display:none">
+        <div class="selcol-header">
+          <span class="selcol-title">Selective Color — Photoshop values</span>
+          <span class="selcol-badge">approximation</span>
+        </div>
+        <div class="selcol-tabs" id="selcol-tabs">
+          <div class="selcol-tab active" data-range="reds" onclick="switchTab(this)"><span class="tab-swatch" style="background:#e05252"></span>Reds</div>
+          <div class="selcol-tab" data-range="yellows" onclick="switchTab(this)"><span class="tab-swatch" style="background:#d4b84a"></span>Yellows</div>
+          <div class="selcol-tab" data-range="greens" onclick="switchTab(this)"><span class="tab-swatch" style="background:#74b83a"></span>Greens</div>
+          <div class="selcol-tab" data-range="cyans" onclick="switchTab(this)"><span class="tab-swatch" style="background:#4fc4c4"></span>Cyans</div>
+          <div class="selcol-tab" data-range="blues" onclick="switchTab(this)"><span class="tab-swatch" style="background:#4f9de0"></span>Blues</div>
+          <div class="selcol-tab" data-range="magentas" onclick="switchTab(this)"><span class="tab-swatch" style="background:#c44fc4"></span>Magentas</div>
+          <div class="selcol-tab" data-range="whites" onclick="switchTab(this)"><span class="tab-swatch" style="background:#d0cfc8"></span>Whites</div>
+          <div class="selcol-tab" data-range="neutrals" onclick="switchTab(this)"><span class="tab-swatch" style="background:#888880"></span>Neutrals</div>
+          <div class="selcol-tab" data-range="blacks" onclick="switchTab(this)"><span class="tab-swatch" style="background:#333330"></span>Blacks</div>
+        </div>
+        <div class="selcol-body">
+          <div class="sc-slider-group" id="sc-sliders">
+            <div class="sc-slider-row">
+              <span class="sc-ch-label">C</span>
+              <div class="sc-track-wrap"><div class="sc-track"><div class="sc-track-bg"></div><div class="sc-center-line"></div><div class="sc-track-fill" id="sc-fill-c"></div><div class="sc-thumb" id="sc-thumb-c"></div></div></div>
+              <span class="sc-val-label" id="sc-val-c">0</span>
+            </div>
+            <div class="sc-slider-row">
+              <span class="sc-ch-label">M</span>
+              <div class="sc-track-wrap"><div class="sc-track"><div class="sc-track-bg"></div><div class="sc-center-line"></div><div class="sc-track-fill" id="sc-fill-m"></div><div class="sc-thumb" id="sc-thumb-m"></div></div></div>
+              <span class="sc-val-label" id="sc-val-m">0</span>
+            </div>
+            <div class="sc-slider-row">
+              <span class="sc-ch-label">Y</span>
+              <div class="sc-track-wrap"><div class="sc-track"><div class="sc-track-bg"></div><div class="sc-center-line"></div><div class="sc-track-fill" id="sc-fill-y"></div><div class="sc-thumb" id="sc-thumb-y"></div></div></div>
+              <span class="sc-val-label" id="sc-val-y">0</span>
+            </div>
+            <div class="sc-slider-row">
+              <span class="sc-ch-label">K</span>
+              <div class="sc-track-wrap"><div class="sc-track"><div class="sc-track-bg"></div><div class="sc-center-line"></div><div class="sc-track-fill" id="sc-fill-k"></div><div class="sc-thumb" id="sc-thumb-k"></div></div></div>
+              <span class="sc-val-label" id="sc-val-k">0</span>
+            </div>
+          </div>
+          <div class="sc-note">Values are approximations derived from the color transfer. Apply them in Photoshop under <strong style="color:var(--text2)">Image → Adjustments → Selective Color</strong> using Relative mode.</div>
         </div>
       </div>
 
@@ -807,7 +984,126 @@
     document.getElementById('hist-row').style.display = 'grid';
     document.getElementById('btn-lut').disabled = false;
     document.getElementById('btn-img').disabled = false;
+    computeSelectiveColor();
     setStatus('grade applied', 'active');
+  }
+
+  // ── SELECTIVE COLOR ──────────────────────────────────────────
+  // Color range masks: returns 0..1 weight for a pixel in that range
+  const SC_RANGES = {
+    reds:     (r,g,b) => Math.max(0, r - Math.max(g,b)),
+    yellows:  (r,g,b) => Math.max(0, Math.min(r,g) - b),
+    greens:   (r,g,b) => Math.max(0, g - Math.max(r,b)),
+    cyans:    (r,g,b) => Math.max(0, Math.min(g,b) - r),
+    blues:    (r,g,b) => Math.max(0, b - Math.max(r,g)),
+    magentas: (r,g,b) => Math.max(0, Math.min(r,b) - g),
+    whites:   (r,g,b) => Math.min(r,g,b),
+    neutrals: (r,g,b) => { const mn=Math.min(r,g,b),mx=Math.max(r,g,b); return (1-mx)*mn + mn*(1-mn); },
+    blacks:   (r,g,b) => 1 - Math.max(r,g,b)
+  };
+
+  let selectiveColorData = {};
+  let activeTab = 'reds';
+
+  function rgbToCmyk(r,g,b) {
+    const k = 1 - Math.max(r,g,b);
+    if (k >= 1) return [0,0,0,1];
+    const c = (1-r-k)/(1-k);
+    const m = (1-g-k)/(1-k);
+    const y = (1-b-k)/(1-k);
+    return [c,m,y,k];
+  }
+
+  function computeSelectiveColor() {
+    if (!srcImg || !refImg) return;
+
+    const srcData = getImageData(srcImg, 200);
+    const refData = getImageData(refImg, 200);
+    const sd = srcData.data, rd = refData.data;
+
+    const ranges = Object.keys(SC_RANGES);
+    const result = {};
+
+    ranges.forEach(range => {
+      const maskFn = SC_RANGES[range];
+      // Sample src pixels and find matching ref pixels weighted by this range
+      let wSum=0, dcSum=0, dmSum=0, dySum=0, dkSum=0;
+
+      // We sample source pixels and compare their CMYK to the ref's average CMYK in that zone
+      // Accumulate weighted CMYK delta between src and ref
+      let refC=0,refM=0,refY=0,refK=0, srcC=0,srcM=0,srcY=0,srcK=0;
+      let refW=0, srcW=0;
+
+      for (let i=0;i<sd.length;i+=4) {
+        const r=sd[i]/255,g=sd[i+1]/255,b=sd[i+2]/255;
+        const w = maskFn(r,g,b);
+        if (w < 0.05) continue;
+        const [c,m,y,k] = rgbToCmyk(r,g,b);
+        srcC+=c*w; srcM+=m*w; srcY+=y*w; srcK+=k*w; srcW+=w;
+      }
+
+      for (let i=0;i<rd.length;i+=4) {
+        const r=rd[i]/255,g=rd[i+1]/255,b=rd[i+2]/255;
+        const w = maskFn(r,g,b);
+        if (w < 0.05) continue;
+        const [c,m,y,k] = rgbToCmyk(r,g,b);
+        refC+=c*w; refM+=m*w; refY+=y*w; refK+=k*w; refW+=w;
+      }
+
+      if (srcW < 0.01 || refW < 0.01) {
+        result[range] = {c:0, m:0, y:0, k:0, empty: true};
+        return;
+      }
+
+      srcC/=srcW; srcM/=srcW; srcY/=srcW; srcK/=srcW;
+      refC/=refW; refM/=refW; refY/=refW; refK/=refW;
+
+      result[range] = {
+        c: Math.round((refC - srcC) * 100),
+        m: Math.round((refM - srcM) * 100),
+        y: Math.round((refY - srcY) * 100),
+        k: Math.round((refK - srcK) * 100),
+        empty: false
+      };
+    });
+
+    selectiveColorData = result;
+    document.getElementById('selcol-section').style.display = 'block';
+    renderSelectiveColor(activeTab);
+  }
+
+  function renderSelectiveColor(range) {
+    const data = selectiveColorData[range];
+    if (!data) return;
+    ['c','m','y','k'].forEach(ch => {
+      const val = data[ch] || 0;
+      const clamped = Math.max(-100, Math.min(100, val));
+      const pct = (clamped + 100) / 200; // 0..1
+      const fill = document.getElementById('sc-fill-'+ch);
+      const thumb = document.getElementById('sc-thumb-'+ch);
+      const label = document.getElementById('sc-val-'+ch);
+      const center = 50;
+      const pos = pct * 100;
+      if (clamped >= 0) {
+        fill.style.left = center+'%';
+        fill.style.width = (pos - center)+'%';
+        fill.style.background = 'var(--accent)';
+      } else {
+        fill.style.left = pos+'%';
+        fill.style.width = (center - pos)+'%';
+        fill.style.background = '#e05252';
+      }
+      thumb.style.left = pos+'%';
+      label.textContent = (val > 0 ? '+' : '') + val;
+      label.className = 'sc-val-label ' + (val > 0 ? 'pos' : val < 0 ? 'neg' : 'zero');
+    });
+  }
+
+  function switchTab(el) {
+    document.querySelectorAll('.selcol-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    activeTab = el.dataset.range;
+    renderSelectiveColor(activeTab);
   }
 
   function handleFile(file, isSource) {
